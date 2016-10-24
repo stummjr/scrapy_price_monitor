@@ -10,6 +10,7 @@ class EbaySpider(BaseSpider):
         extractor = MicrodataExtractor()
         properties = extractor.extract(response.text).get('items')[0].get('properties', {})
         item = {}
+        item['url'] = response.url
         item['title'] = properties.get('name')
         item['price'] = properties.get('offers', {}).get('properties', {}).get('price')
         if 'aggregateRating' in properties:
