@@ -6,7 +6,7 @@ class AmazonSpider(BaseSpider):
     allowed_domains = ["amazon.com"]
 
     def parse(self, response):
-        item = {}
+        item = response.meta.get('item', {})
         item['url'] = response.url
         item['title'] = response.css("span#productTitle::text").extract_first("").strip()
         item['price'] = response.css("span#priceblock_ourprice::text").re_first("\$(.*)")

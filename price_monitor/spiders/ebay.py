@@ -14,7 +14,7 @@ class EbaySpider(BaseSpider):
     def parse(self, response):
         extractor = MicrodataExtractor()
         properties = extractor.extract(response.body_as_unicode()).get('items')[0].get('properties', {})
-        item = {}
+        item = response.meta.get('item', {})
         item['url'] = response.url
         item['title'] = properties.get('name')
         item['price'] = properties.get('offers', {}).get('properties', {}).get('price')
