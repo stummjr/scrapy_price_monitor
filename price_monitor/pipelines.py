@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
-
-class PriceMonitorPipeline(object):
+class EbayNormalizeTitlePipeline(object):
     def process_item(self, item, spider):
+        prefix = 'Details about'
+        if item.get('title').startswith(prefix):
+            item['title'] = item.get('title').replace(prefix, '').strip()
         return item

@@ -5,6 +5,11 @@ from .base_spider import BaseSpider
 class EbaySpider(BaseSpider):
     name = "ebay"
     allowed_domains = ["ebay.com"]
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'price_monitor.pipelines.EbayNormalizeTitlePipeline': 300
+        }
+    }
 
     def parse(self, response):
         extractor = MicrodataExtractor()
