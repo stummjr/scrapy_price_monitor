@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 from price_monitor import settings
 from hubstorage import HubstorageClient
+from price_monitor.utils import reversed_timestamp
 
 
 class EbayNormalizeTitlePipeline(object):
@@ -21,7 +21,6 @@ class CollectionStoragePipeline(object):
         self.storage = project.collections.new_store('price_monitor_data')
 
     def process_item(self, item, spider):
-        def reversed_timestamp():
-            return str(int((datetime(5000, 1, 1) - datetime.now()).total_seconds()))
 
         self.storage.set({'_key': reversed_timestamp(), 'value': item})
+        return item

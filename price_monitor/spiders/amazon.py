@@ -9,6 +9,8 @@ class AmazonSpider(BaseSpider):
         item = response.meta.get('item', {})
         item['url'] = response.url
         item['title'] = response.css("span#productTitle::text").extract_first("").strip()
-        item['price'] = response.css("span#priceblock_ourprice::text").re_first("\$(.*)")
+        item['price'] = float(
+            response.css("span#priceblock_ourprice::text").re_first("\$(.*)") or 0
+        )
         item['rating'] = response.css('a#reviewStarsLinkedCustomerReviews > i > span::text').re_first("(.+) out of .+")
         yield item

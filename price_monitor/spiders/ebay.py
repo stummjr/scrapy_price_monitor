@@ -7,7 +7,8 @@ class EbaySpider(BaseSpider):
     allowed_domains = ["ebay.com"]
     custom_settings = {
         'ITEM_PIPELINES': {
-            'price_monitor.pipelines.EbayNormalizeTitlePipeline': 300
+            'price_monitor.pipelines.EbayNormalizeTitlePipeline': 300,
+            'price_monitor.pipelines.CollectionStoragePipeline': 400
         }
     }
 
@@ -17,7 +18,9 @@ class EbaySpider(BaseSpider):
         item = response.meta.get('item', {})
         item['url'] = response.url
         item['title'] = properties.get('name')
-        item['price'] = properties.get('offers', {}).get('properties', {}).get('price')
+        item['price'] = float(
+            properties.get('offers', {}).get('properties', {}).get('price', 0)
+        )
         if 'aggregateRating' in properties:
             item['rating'] = properties.get('aggregateRating', {}).get('properties', {}).get('ratingValue')
         yield item
