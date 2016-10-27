@@ -31,21 +31,6 @@ class TestMonitor(unittest.TestCase):
         item['value']['price'] = 54.99
         self.assertFalse(monitor.is_the_cheapest_from(item, self.prices_data))
 
-    # @freeze_time("2016-10-26 14:03:47")
-    # @patch('hubstorage.HubstorageClient.get_project')
-    # def test_get_last_n_hours_items(self, gp_mock):
-    #     proj_mock = gp_mock.return_value
-    #     coll_mock = proj_mock.return_value.collections.return_value
-    #     new_store = coll_mock.return_value.new_store
-    #     new_store.return_value = ''
-    #     # store_mock = coll_mock.return_value.new_store.return_value
-    #     # store_mock.get.return_value = []
-    #     monitor.get_items_from_last_n_hours("", 1, 1)
-    #     gp_mock.assert_called_with(1)
-    #     self.assertTrue(new_store.called)
-    #     new_store.assert_called_with('price_monitor_data')
-    #     # ns_mock.assert_called_with('price_monitor_data')
-
 
 if __name__ == '__main__':
     unittest.main()
