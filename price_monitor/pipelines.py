@@ -21,6 +21,5 @@ class CollectionStoragePipeline(object):
         self.storage = project.collections.new_store('price_monitor_data')
 
     def process_item(self, item, spider):
-
         self.storage.set({'_key': reversed_timestamp(), 'value': item})
         return item
