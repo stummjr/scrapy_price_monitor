@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
 
 
 BOT_NAME = 'price_monitor'
@@ -11,12 +10,13 @@ NEWSPIDER_MODULE = 'price_monitor.spiders'
 ROBOTSTXT_OBEY = True
 DOWNLOAD_DELAY = 3
 
-SHUB_KEY = os.environ.get('SHUB_KEY')
+# DO NOT COMMIT THIS!!!!!!!!
+SHUB_KEY = 'd7cf14b3fdf749cfac1cb99897f92788'
 
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    'price_monitor.pipelines.CollectionStoragePipeline': 400,
-}
+# ITEM_PIPELINES = {
+#     'price_monitor.pipelines.CollectionStoragePipeline': 400,
+# }
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html

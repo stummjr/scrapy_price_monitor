@@ -7,7 +7,7 @@ from price_monitor.utils import reversed_timestamp
 class EbayNormalizeTitlePipeline(object):
 
     def process_item(self, item, spider):
-        prefix = 'Details about'
+        prefix = 'Detalhes sobre'
         if item.get('title').startswith(prefix):
             item['title'] = item.get('title').replace(prefix, '').strip()
         return item

@@ -3,78 +3,83 @@
 import os
 import json
 import argparse
-from hubstorage import HubstorageClient
 from datetime import datetime, timedelta
 
 
-def build_report(items):
-    raise NotImplementedError('Report not implemented yet')
+# TODO: change this!!!
+storage_path = "price_monitor/items.jl"
 
 
-# should compare only from the same product
-def get_items_from_last_n_hours(apikey, project_id, hours=24):
-    project = HubstorageClient(apikey).get_project(project_id)
-    item_store = project.collections.new_store('price_monitor_data')
-    since_ts = int((datetime.now() - timedelta(hours=hours)).timestamp() * 1000)
-    return list(item_store.get(meta=['_key', '_ts'], startts=since_ts))
+def get_items_from_last_n_hours(itemsfile, n=24):
+    """Returns the items scraped in the last n hours, sorted from the newest
+       to the lowest.
+    """
+    item_store = [json.loads(s.strip()) for s in open(itemsfile)]
+    since_ts = int((datetime.now() - timedelta(hours=n)).timestamp())
+    return sorted(
+        [item for item in item_store if item.get('timestamp') >= since_ts],
+        key=lambda x: x.get('timestamp'),
+        reverse=True
+    )
 
 
-def get_latest_item_from_store(last_n_hours_items, product, store):
-    for item in last_n_hours_items:
-        if (item.get('value', {}).get('product') == product and
-                store in item.get('value', {}).get('url')):
+def get_latest_item_from_retailer(product_name, retailer, items):
+    for item in items:
+        if (item.get('product') == product_name and retailer in item.get('url')):
             return item
 
 
-def is_the_cheapest_from(item, last_n_hours_items):
-    if float(item.get('value', {}).get('price')) == 0:
+def is_the_cheapest_from(item, items):
+    if float(item.get('price')) == 0:
         return False
     lowest_in_interval = min(
-        [float(x.get('value', {}).get('price')) for x in last_n_hours_items
-            if x != item and
-            x.get('value', {}).get('product') == item.get('value', {}).get('product')]
+        [float(x.get('price')) for x in items
+            if x != item and x.get('product') == item.get('product')]
     )
-    return float(item.get('value', {}).get('price')) < lowest_in_interval
+    return float(item.get('price')) < lowest_in_interval
 
 
 def get_product_names():
-    return list(
-        # json.loads(pkgutil.get_data("price_monitor", "resources/urls.json").decode()).keys()
-        json.load(open("price_monitor/resources/urls.json")).keys()
-    )
+    return list(json.load(open("price_monitor/resources/urls.json")).keys())
 
 
-def get_stores_for_product(product_name):
-    def get_store_name_from_url(url):
+def get_retailers_for_product(product_name):
+    def get_retailer_name_from_url(url):
         return url.split("://")[1].split("/")[0].replace("www.", "")
 
     data = json.load(open("price_monitor/resources/urls.json"))
-    # open(pkg_resources.resource_filename("price_monitor", "resources/urls.json")))
-    return {get_store_name_from_url(url) for url in data[product_name]}
+    return {get_retailer_name_from_url(url) for url in data[product_name]}
+
+
+def print_report(item, items):
+    print('\n***** LOWEST PRICE FOUND *****')
+    print('Product: {}'.format(item.get('product')))
+    print('Price: {}'.format(item.get('price')))
+    print('URL: {}'.format(item.get('url')))
+    print('Time: {}'.format(datetime.fromtimestamp(item.get('timestamp'))))
+    print('-- History --')
+    for item in items:
+        print('{}'.format(datetime.fromtimestamp(item.get('timestamp'))))
+        print('\tUS$ {}'.format(item.get('price')))
 
 
 def main(args):
-    items = get_items_from_last_n_hours(args.apikey, args.project_id, args.days * 24)
+    items = get_items_from_last_n_hours(args.itemsfile, args.days * 24)
     for product_name in get_product_names():
-        for store in get_stores_for_product(product_name):
-            item = get_latest_item_from_store(items, product_name, store)
-            if is_the_cheapest_from(item, items):
-                print('***** LOWEST PRICE FOUND!!! *****')
+        for retailer in get_retailers_for_product(product_name):
+            item = get_latest_item_from_retailer(product_name, retailer, items)
+            if item and is_the_cheapest_from(item, items):
+                print_report(item, items)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '--apikey', default=os.getenv('SHUB_KEY', None),
-        help='API key to use for scrapinghub (fallbacks to SHUB_KEY variable)')
-    parser.add_argument('project_id', type=int, help='Project ID to get info from.')
     parser.add_argument('--days', type=int, default=1,
                         help='How many days back to compare with the last price.')
-    args = parser.parse_args()
+    parser.add_argument('--itemsfile', type=str, default=storage_path,
+                        help='Path to the file holding the scraped items')
 
-    if not args.apikey:
-        parser.error('Please provide an API key with --apikey option')
-    return args
+    return parser.parse_args()
 
 
 if __name__ == '__main__':

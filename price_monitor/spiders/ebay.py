@@ -8,7 +8,7 @@ class EbaySpider(BaseSpider):
     custom_settings = {
         'ITEM_PIPELINES': {
             'price_monitor.pipelines.EbayNormalizeTitlePipeline': 300,
-            'price_monitor.pipelines.CollectionStoragePipeline': 400
+            # 'price_monitor.pipelines.CollectionStoragePipeline': 400
         }
     }
 
