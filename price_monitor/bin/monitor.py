@@ -1,54 +1,10 @@
 """Simple price monitor built with Scrapy and Scrapy Cloud
 """
-import os
 import json
 import argparse
 from datetime import datetime, timedelta
 
-
-# TODO: change this!!!
 storage_path = "price_monitor/items.jl"
-
-
-def get_items_from_last_n_hours(itemsfile, n=24):
-    """Returns the items scraped in the last n hours, sorted from the newest
-       to the lowest.
-    """
-    item_store = [json.loads(s.strip()) for s in open(itemsfile)]
-    since_ts = int((datetime.now() - timedelta(hours=n)).timestamp())
-    return sorted(
-        [item for item in item_store if item.get('timestamp') >= since_ts],
-        key=lambda x: x.get('timestamp'),
-        reverse=True
-    )
-
-
-def get_latest_item_from_retailer(product_name, retailer, items):
-    for item in items:
-        if (item.get('product') == product_name and retailer in item.get('url')):
-            return item
-
-
-def is_the_cheapest_from(item, items):
-    if float(item.get('price')) == 0:
-        return False
-    lowest_in_interval = min(
-        [float(x.get('price')) for x in items
-            if x != item and x.get('product') == item.get('product')]
-    )
-    return float(item.get('price')) < lowest_in_interval
-
-
-def get_product_names():
-    return list(json.load(open("price_monitor/resources/urls.json")).keys())
-
-
-def get_retailers_for_product(product_name):
-    def get_retailer_name_from_url(url):
-        return url.split("://")[1].split("/")[0].replace("www.", "")
-
-    data = json.load(open("price_monitor/resources/urls.json"))
-    return {get_retailer_name_from_url(url) for url in data[product_name]}
 
 
 def print_report(item, items):
@@ -63,12 +19,61 @@ def print_report(item, items):
         print('\tUS$ {}'.format(item.get('price')))
 
 
+def is_cheaper_than_all(item, items):
+    if float(item.get('price')) == 0:
+        return False
+
+    cheapest_in_interval = min(
+        [float(x.get('price')) for x in items
+            if x != item and x.get('product') == item.get('product')]
+    )
+    return float(item.get('price')) < cheapest_in_interval
+
+
+def get_items_by_product(product_name, items):
+    return [item for item in items if item.get('product') == product_name]
+
+
+def get_latest_from_retailer(product_name, retailer, items):
+    for item in sort_by_age(get_items_by_product(product_name, items)):
+        if retailer in item.get('url'):
+            return item
+
+
+def get_retailers_for_product(product_name):
+    def get_retailer_name_from_url(url):
+        return url.split("://")[1].split("/")[0].replace("www.", "")
+
+    data = json.load(open("price_monitor/resources/urls.json"))
+    return {get_retailer_name_from_url(url) for url in data[product_name]}
+
+
+def get_product_names():
+    return list(json.load(open("price_monitor/resources/urls.json")).keys())
+
+
+def get_items_newer_than(since_time, items):
+    return [item for item in items if item.get('timestamp') >= since_time]
+
+
+def sort_by_age(items):
+    return sorted(items, key=lambda x: x.get('timestamp'), reverse=True)
+
+
+def get_items_from_last_n_hours(itemsfile, n=24):
+    """Fetch items from the last n hours, starting from the newest
+    """
+    items = [json.loads(s.strip()) for s in open(itemsfile)]
+    since_time = int((datetime.now() - timedelta(hours=n)).timestamp())
+    return sort_by_age(get_items_newer_than(since_time, items))
+
+
 def main(args):
     items = get_items_from_last_n_hours(args.itemsfile, args.days * 24)
     for product_name in get_product_names():
         for retailer in get_retailers_for_product(product_name):
-            item = get_latest_item_from_retailer(product_name, retailer, items)
-            if item and is_the_cheapest_from(item, items):
+            item = get_latest_from_retailer(product_name, retailer, items)
+            if item and is_cheaper_than_all(item, items):
                 print_report(item, items)
 
 
