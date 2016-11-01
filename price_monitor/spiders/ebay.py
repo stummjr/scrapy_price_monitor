@@ -3,14 +3,8 @@ from .base_spider import BaseSpider
 
 
 class EbaySpider(BaseSpider):
-    name = "ebay"
+    name = "ebay.com"
     allowed_domains = ["ebay.com"]
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'price_monitor.pipelines.EbayNormalizeTitlePipeline': 300,
-            'price_monitor.pipelines.CollectionStoragePipeline': 400
-        }
-    }
 
     def parse(self, response):
         extractor = MicrodataExtractor()
@@ -21,6 +15,7 @@ class EbaySpider(BaseSpider):
         item['price'] = float(
             properties.get('offers', {}).get('properties', {}).get('price', 0)
         )
+        item['title'] = item.get('title').replace('Details about', '').strip()
         if 'aggregateRating' in properties:
             item['rating'] = properties.get('aggregateRating', {}).get('properties', {}).get('ratingValue')
         yield item
