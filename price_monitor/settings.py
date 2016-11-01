@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 
 BOT_NAME = 'price_monitor'
 SPIDER_MODULES = ['price_monitor.spiders']
@@ -10,8 +10,7 @@ NEWSPIDER_MODULE = 'price_monitor.spiders'
 ROBOTSTXT_OBEY = True
 DOWNLOAD_DELAY = 3
 
-# DO NOT COMMIT THIS!!!!!!!!
-SHUB_KEY = 'd7cf14b3fdf749cfac1cb99897f92788'
+SHUB_KEY = os.environ.get('$SHUB_KEY')
 
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
