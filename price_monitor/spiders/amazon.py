@@ -2,7 +2,7 @@ from .base_spider import BaseSpider
 
 
 class AmazonSpider(BaseSpider):
-    name = "amazon"
+    name = "amazon.com"
     allowed_domains = ["amazon.com"]
 
     def parse(self, response):
