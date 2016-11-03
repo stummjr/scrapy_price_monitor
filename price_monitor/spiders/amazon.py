@@ -12,5 +12,4 @@ class AmazonSpider(BaseSpider):
         item['price'] = float(
             response.css("span#priceblock_ourprice::text").re_first("\$(.*)") or 0
         )
-        item['rating'] = response.css('a#reviewStarsLinkedCustomerReviews > i > span::text').re_first("(.+) out of .+")
         yield item

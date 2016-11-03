@@ -12,5 +12,4 @@ class BestbuySpider(BaseSpider):
         item['price'] = float(
             response.css('div.price-block ::attr(data-customer-price)').extract_first(default=0)
         )
-        item['rating'] = response.css("span.average-score ::text").extract_first()
         yield item
