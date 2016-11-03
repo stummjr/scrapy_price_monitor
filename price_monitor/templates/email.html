@@ -1,0 +1,14 @@
+<h2>Price drop detected 💳 💸 🎉 🎁</h2>
+<table border="1">
+
+{% for item in items %}
+<tr><td>
+    <p><strong>Product:</strong> {{item.title}}</p>
+    <p><strong>Price:</strong> {{item.price}}</p>
+    <p><strong>Store:</strong> {{item.retailer}}</p>
+    <p><strong>Price obtained at:</strong> {{item.when}}</p>
+    <p>Visit the product page at {{item.retailer}}: <a href="{{item.url}}">{{item.url}}</a></p>
+</td></tr>
+{% endfor %}
+</table>
+

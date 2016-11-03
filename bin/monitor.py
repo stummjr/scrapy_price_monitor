@@ -1,10 +1,17 @@
 """Simple price monitor built with Scrapy and Scrapy Cloud
 """
-import os
 import argparse
+import os
 from datetime import datetime, timedelta
+
+import boto
 from hubstorage import HubstorageClient
+from jinja2 import Environment, PackageLoader
+from price_monitor import settings
 from price_monitor.utils import get_product_names, get_retailers_for_product
+from w3lib.html import remove_tags
+
+jinja_env = Environment(loader=PackageLoader('price_monitor', 'templates'))
 
 
 class ProductItems(object):
@@ -69,10 +76,18 @@ class ProductItems(object):
 
 
 def main(args):
+    items = []
     for product_name in get_product_names():
-        prod_items = ProductItems(product_name, args.apikey, args.project_id, 48, args.price_threshold)
+        prod_items = ProductItems(
+            product_name, args.apikey, args.project_id, args.days * 24, args.price_threshold
+        )
         if prod_items.got_best_deal_in_last_run():
-            print_report(prod_items.get_best_deal())
+            best_deal = prod_items.get_best_deal()
+            print_report(best_deal)
+            items.append(best_deal)
+
+    if items:
+        send_email_alert(items)
 
 
 def print_report(item):
@@ -80,7 +95,19 @@ def print_report(item):
     print('Product: {}'.format(item.get('product_name')))
     print('Price: {}'.format(item.get('price')))
     print('URL: {}'.format(item.get('url')))
-    print('Time: {}'.format(datetime.fromtimestamp(item.get('timestamp'))))
+    print('Time: {}'.format(item.get('when')))
+
+
+def send_email_alert(items):
+    ses = boto.connect_ses(settings.AWS_ACCESS_KEY, settings.AWS_SECRET_KEY)
+    html_body = jinja_env.get_template('email.html').render(items=items)
+    ses.send_email(
+        'Price Monitor <valdir@scrapinghub.com>',
+        'Price drop alert',
+        remove_tags(html_body),
+        ['valdir@scrapinghub.com'],
+        html_body=html_body
+    )
 
 
 def parse_args():
