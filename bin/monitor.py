@@ -16,7 +16,7 @@ jinja_env = Environment(loader=PackageLoader('price_monitor', 'templates'))
 
 class ProductItems(object):
 
-    def __init__(self, product_name, apikey, project_id, hours=24, price_threshold=0):
+    def __init__(self, product_name, apikey, project_id, hours, price_threshold):
         self.product_name = product_name
         self.project = HubstorageClient(apikey).get_project(project_id)
         self.item_store = self.project.collections.new_store(product_name)
@@ -75,29 +75,6 @@ class ProductItems(object):
             return best_so_far
 
 
-def main(args):
-    items = []
-    for product_name in get_product_names():
-        prod_items = ProductItems(
-            product_name, args.apikey, args.project_id, args.days * 24, args.price_threshold
-        )
-        if prod_items.got_best_deal_in_last_run():
-            best_deal = prod_items.get_best_deal()
-            print_report(best_deal)
-            items.append(best_deal)
-
-    if items:
-        send_email_alert(items)
-
-
-def print_report(item):
-    print('\n***** LOWEST PRICE FOUND *****')
-    print('Product: {}'.format(item.get('product_name')))
-    print('Price: {}'.format(item.get('price')))
-    print('URL: {}'.format(item.get('url')))
-    print('Time: {}'.format(item.get('when')))
-
-
 def send_email_alert(items):
     ses = boto.connect_ses(settings.AWS_ACCESS_KEY, settings.AWS_SECRET_KEY)
     html_body = jinja_env.get_template('email.html').render(items=items)
@@ -110,6 +87,20 @@ def send_email_alert(items):
     )
 
 
+def main(args):
+    items = []
+    for product_name in get_product_names():
+        prod_items = ProductItems(
+            product_name, args.apikey, args.project_id,
+            args.days * 24, args.price_threshold
+        )
+        if prod_items.got_best_deal_in_last_run():
+            items.append(prod_items.get_best_deal())
+
+    if items:
+        send_email_alert(items)
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -117,7 +108,7 @@ def parse_args():
         help='API key to use for scrapinghub (fallbacks to SHUB_KEY variable)')
     parser.add_argument('--days', type=int, default=1,
                         help='How many days back to compare with the last price')
-    parser.add_argument('--price_threshold', type=float, default=1.0,
+    parser.add_argument('--price_threshold', type=float, default=0,
                         help='A margin to avoid raising alerts with minor price drops')
     parser.add_argument('project_id', type=int, help='Project ID to get info from')
 
