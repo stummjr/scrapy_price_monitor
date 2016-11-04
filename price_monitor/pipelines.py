@@ -14,5 +14,8 @@ class CollectionStoragePipeline(object):
             self.data_stores[product_name] = project.collections.new_store(product_name)
 
     def process_item(self, item, spider):
-        self.data_stores[item['product_name']].set({'_key': reversed_timestamp(), 'value': item})
+        key = "{}-{}-{}".format(
+            reversed_timestamp(), item.get('product_name'), item.get('retailer')
+        )
+        self.data_stores[item['product_name']].set({'_key': key, 'value': item})
         return item

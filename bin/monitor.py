@@ -94,6 +94,8 @@ def main(args):
             product_name, args.apikey, args.project_id,
             args.days * 24, args.price_threshold
         )
+        if not prod_items:
+            return
         if prod_items.got_best_deal_in_last_run():
             items.append(prod_items.get_best_deal())
 
