@@ -13,9 +13,9 @@ sends an email alerting you about the price drops.
 
 ## Including products to monitor
 
-There's a file `resources/urls.json` that lists the URLs from the products that
+There's a `resources/urls.json` file that lists the URLs from the products that
 we want to monitor. If you just want to include a new product to monitor from
-the retailers currently supported, just add a new key for that product and add
+the already supported retailers, just add a new key for that product and add
 the URL list as its value, such as:
 
     {
@@ -43,7 +43,8 @@ running:
     ebay.com
 
 If the retailer that you want to monitor is not yet supported, just create a spider
-to handle the product pages from it. To do that, run:
+to handle the product pages from it. To include a spider for samsclub.com, you
+could run:
 
     $ scrapy genspider samsclub.com samsclub.com
 
@@ -52,14 +53,15 @@ And then, open the spider and add the extraction rules:
     $ scrapy edit samsclub.com
 
 Have a look at the current spiders and implement the new ones using the same
-structure, subclassing `BaseSpider` instead of `scrapy.Spider`.
+structure, subclassing `BaseSpider` instead of `scrapy.Spider`. This way, your
+spiders will automatically read the URLs list from `resources/urls.json`.
 
 
 ## Customizing the Price Monitor
 
 The price monitor sends an email using Amazon SES service, so to run it you
-have to either set both `AWS_ACCESS_KEY` and `AWS_SECRET_KEY` variables in
-`price_monitor/settings.py`. If you want to use another emailing service,
+have to set both `AWS_ACCESS_KEY` and `AWS_SECRET_KEY` variables in
+`price_monitor/settings.py`. If you want to use another email service,
 you have to rewrite the `send_email_alert` function in
 `price_monitor/bin/monitor.py`.
 
@@ -90,3 +92,13 @@ time and schedule the monitor to run about 15 minutes after the spiders.
 
 Take a look at this video to learn how to schedule periodic jobs on Scrapy Cloud:
 https://youtu.be/JYch0zRmcgU?t=1m51s
+
+
+### Parameters for the Monitor Script
+The monitor script takes these parameters and you can pass them via the parameters box in the
+scheduling dialog:
+
+- `--days`: how many days of data we want to compare with the scraped prices.
+- `--price_threshold`: a margin that you can set to avoid getting alerts from minor price changes. For example, if you set it to 1.0, you will only get alerts when the price drop is bigger than $1.00.
+- `--apikey`: your Scrapy Cloud API key. You can get it in: https://app.scrapinghub.com/account/apikey.
+- `project_id`: the Scrapy Cloud project where the monitor is deployed (you can grab it from your project URL at Scrapy Cloud).
