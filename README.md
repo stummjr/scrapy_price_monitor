@@ -95,6 +95,7 @@ https://youtu.be/JYch0zRmcgU?t=1m51s
 
 
 ### Parameters for the Monitor Script
+
 The monitor script takes these parameters and you can pass them via the parameters box in the
 scheduling dialog:
 
@@ -102,3 +103,24 @@ scheduling dialog:
 - `--price_threshold`: a margin that you can set to avoid getting alerts from minor price changes. For example, if you set it to 1.0, you will only get alerts when the price drop is bigger than $1.00.
 - `--apikey`: your Scrapy Cloud API key. You can get it in: https://app.scrapinghub.com/account/apikey.
 - `project_id`: the Scrapy Cloud project where the monitor is deployed (you can grab it from your project URL at Scrapy Cloud).
+
+
+## Running in a local environment
+
+You can also run this project in your local environment. The only dependency
+from Scrapy Cloud is the [Collections API](https://doc.scrapinghub.com/api/collections.html),
+but the spiders and the monitor can be executed locally.
+
+To do that, first add your Scrapy Cloud project id to [settings.py `SHUB_PROJ_ID` variable](https://github.com/stummjr/scrapy_price_monitor/blob/master/price_monitor/settings.py#L11).
+
+You can run the spiders via command line:
+
+    $ scrapy crawl bestbuy.com
+
+This will run the spider named as `bestbuy.com` and store the fetched data into
+a Scrapy Cloud collection, under the project you set in the last step.
+
+You can also run the price monitor via command line:
+
+    $ python bin/monitor.py --apikey <SCRAPINGHUB_KEY> --days 2 --price_threshold 1 <PROJ_ID>
+
