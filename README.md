@@ -100,7 +100,7 @@ The monitor script takes these parameters and you can pass them via the paramete
 scheduling dialog:
 
 - `--days`: how many days of data we want to compare with the scraped prices.
-- `--price_threshold`: a margin that you can set to avoid getting alerts from minor price changes. For example, if you set it to 1.0, you will only get alerts when the price drop is bigger than $1.00.
+- `--threshold`: a margin that you can set to avoid getting alerts from minor price changes. For example, if you set it to 1.0, you will only get alerts when the price drop is bigger than $1.00.
 - `--apikey`: your Scrapy Cloud API key. You can get it in: https://app.scrapinghub.com/account/apikey.
 - `project_id`: the Scrapy Cloud project where the monitor is deployed (you can grab it from your project URL at Scrapy Cloud).
 
@@ -122,5 +122,5 @@ a Scrapy Cloud collection, under the project you set in the last step.
 
 You can also run the price monitor via command line:
 
-    $ python bin/monitor.py --apikey <SCRAPINGHUB_KEY> --days 2 --price_threshold 1 <PROJ_ID>
+    $ python bin/monitor.py --apikey <SCRAPINGHUB_KEY> --days 2 --threshold 1 --project <PROJ_ID>
 

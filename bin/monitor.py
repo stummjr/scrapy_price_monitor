@@ -105,14 +105,14 @@ def main(args):
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '--apikey', default=os.getenv('SHUB_KEY', None),
-        help='API key to use for scrapinghub (fallbacks to SHUB_KEY variable)')
+    parser.add_argument('--apikey', default=settings.SHUB_KEY or os.getenv('SHUB_KEY'),
+                        help='API key to use for scrapinghub (fallbacks to SHUB_KEY variable)')
     parser.add_argument('--days', type=int, default=1,
                         help='How many days back to compare with the last price')
-    parser.add_argument('--price_threshold', type=float, default=0,
+    parser.add_argument('--threshold', type=float, default=0,
                         help='A margin to avoid raising alerts with minor price drops')
-    parser.add_argument('project_id', type=int, help='Project ID to get info from')
+    parser.add_argument('--project', type=int, default=settings.SHUB_PROJ_ID,
+                        help='Project ID to get info from')
 
     return parser.parse_args()
 
