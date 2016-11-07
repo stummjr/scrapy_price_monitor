@@ -91,8 +91,8 @@ def main(args):
     items = []
     for product_name in get_product_names():
         prod_items = ProductItems(
-            product_name, args.apikey, args.project_id,
-            args.days * 24, args.price_threshold
+            product_name, args.apikey, args.project,
+            args.days * 24, args.threshold
         )
         if not prod_items:
             return
