@@ -79,10 +79,10 @@ def send_email_alert(items):
     ses = boto.connect_ses(settings.AWS_ACCESS_KEY, settings.AWS_SECRET_KEY)
     html_body = jinja_env.get_template('email.html').render(items=items)
     ses.send_email(
-        'Price Monitor <valdir@scrapinghub.com>',
+        settings.EMAIL_ALERT_FROM,
         'Price drop alert',
         remove_tags(html_body),
-        ['valdir@scrapinghub.com'],
+        settings.EMAIL_ALERT_TO,
         html_body=html_body
     )
 
