@@ -2,8 +2,6 @@ import json
 import pkgutil
 from datetime import datetime, timedelta
 
-URLS_FILE = "price_monitor/resources/urls.json"
-
 
 def timestamp_from_reversed(reversed):
     return datetime(5000, 1, 1) - timedelta(seconds=float(reversed))

@@ -7,9 +7,11 @@ NEWSPIDER_MODULE = 'price_monitor.spiders'
 
 ROBOTSTXT_OBEY = True
 
-SHUB_KEY = os.environ.get('$SHUB_KEY')
-AWS_ACCESS_KEY = os.environ.get('$AWS_ACCESS_KEY')
-AWS_SECRET_KEY = os.environ.get('$AWS_SECRET_KEY')
+SHUB_KEY = os.getenv('$SHUB_KEY')
+AWS_ACCESS_KEY = os.getenv('$AWS_ACCESS_KEY')
+AWS_SECRET_KEY = os.getenv('$AWS_SECRET_KEY')
+
+SHUB_JOBKEY = os.getenv('SHUB_JOBKEY', '').split('/')[0]
 
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
