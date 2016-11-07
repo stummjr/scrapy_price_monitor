@@ -11,7 +11,7 @@ the latest prices are the best ones in a given time span. If so, the monitor
 sends an email alerting you about the price drops.
 
 
-## Including products to monitor
+## Including Products to Monitor
 
 There's a `resources/urls.json` file that lists the URLs from the products that
 we want to monitor. If you just want to include a new product to monitor from
@@ -32,7 +32,7 @@ the URL list as its value, such as:
     }
 
 
-## Supporting further retailers
+## Supporting Further Retailers
 
 This project currently only works with 3 online retailers, and you can list them
 running:
@@ -105,7 +105,7 @@ scheduling dialog:
 - `project_id`: the Scrapy Cloud project where the monitor is deployed (you can grab it from your project URL at Scrapy Cloud).
 
 
-## Running in a local environment
+## Running in a Local Environment
 
 You can also run this project in your local environment. The only dependency
 from Scrapy Cloud is the [Collections API](https://doc.scrapinghub.com/api/collections.html),
