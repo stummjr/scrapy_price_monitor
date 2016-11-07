@@ -67,24 +67,50 @@ you have to rewrite the `send_email_alert` function in
 
 The price monitor can be further customized via parameters to the
 `price_monitor/bin/monitor.py` script. We will dig on those parameters
-when showing how to schedule the project on Scrapy Cloud.
+later when showing how to schedule the project on Scrapy Cloud.
 
 
-## How to Deploy to Scrapy Cloud
+## Installing and Running
 
-First of all, you have to create an account on Scrapy Cloud (it's free):
-https://app.scrapinghub.com/account/signup/
+1. Clone this repo:
 
-After that, you can to follow the steps from this video to deploy the project
-into your account: https://youtu.be/JYch0zRmcgU
+        $ git clone git@github.com:stummjr/scrapy_price_monitor.git
+
+2. Enter the folder and install the project dependencies:
+
+        $ cd scrapy_price_monitor
+        $ pip install -r requirements.txt
+
+3. Create a free forever account on Scrapy Cloud:
+https://app.scrapinghub.com/account/signup/.
+
+4. Create a Scrapy project on Scrapy Cloud and copy the project id from the project URL.
+
+5. Install [Scrapinghub command line tool (shub)](https://github.com/scrapinghub/shub):
+
+        $ pip install shub
+
+6. Authenticate using your Scrapinghub API key:
+
+        $ shub login
+
+7. Finally, deploy the local project to your Scrapy Cloud project:
+
+        $ shub deploy <your_project_id_here>
+
+This video also explains how to deploy a Scrapy project to Scrapy Cloud:
+https://youtu.be/JYch0zRmcgU
 
 
 ## How to Schedule on Scrapy Cloud
 
+After you have deployed the project to Scrapy Cloud, it's time to schedule its
+execution on Scrapy Cloud.
+
 This project has two main components:
 
-- the **spiders** that collect prices from the retailers' websites
-- the **price monitor script** that checks whether there's a new deal in the latest prices
+- the [**spiders**](https://github.com/stummjr/scrapy_price_monitor/tree/master/price_monitor/spiders) that collect prices from the retailers' websites
+- the [**price monitor script**](https://github.com/stummjr/scrapy_price_monitor/blob/master/bin/monitor.py) that checks whether there's a new deal in the latest prices
 
 You have to schedule both the spiders and the monitor to run periodically on
 Scrapy Cloud. It's a good idea to schedule all the spiders to run at the same
@@ -107,20 +133,19 @@ scheduling dialog:
 
 ## Running in a Local Environment
 
-You can also run this project in your local environment. The only dependency
+You can run this project on Scrapy Cloud or on your local environment. The only dependency
 from Scrapy Cloud is the [Collections API](https://doc.scrapinghub.com/api/collections.html),
 but the spiders and the monitor can be executed locally.
 
 To do that, first add your Scrapy Cloud project id to [settings.py `SHUB_PROJ_ID` variable](https://github.com/stummjr/scrapy_price_monitor/blob/master/price_monitor/settings.py#L11).
 
-You can run the spiders via command line:
+Then run the spiders via command line:
 
     $ scrapy crawl bestbuy.com
 
-This will run the spider named as `bestbuy.com` and store the fetched data into
+This will run the spider named as `bestbuy.com` and store the scraped data into
 a Scrapy Cloud collection, under the project you set in the last step.
 
 You can also run the price monitor via command line:
 
     $ python bin/monitor.py --apikey <SCRAPINGHUB_KEY> --days 2 --threshold 1 --project <PROJ_ID>
-
