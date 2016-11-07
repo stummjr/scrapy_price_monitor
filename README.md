@@ -102,7 +102,7 @@ scheduling dialog:
 - `--days`: how many days of data we want to compare with the scraped prices.
 - `--threshold`: a margin that you can set to avoid getting alerts from minor price changes. For example, if you set it to 1.0, you will only get alerts when the price drop is bigger than $1.00.
 - `--apikey`: your Scrapy Cloud API key. You can get it in: https://app.scrapinghub.com/account/apikey.
-- `project_id`: the Scrapy Cloud project where the monitor is deployed (you can grab it from your project URL at Scrapy Cloud).
+- `--project`: the Scrapy Cloud project where the monitor is deployed (you can grab it from your project URL at Scrapy Cloud).
 
 
 ## Running in a Local Environment
