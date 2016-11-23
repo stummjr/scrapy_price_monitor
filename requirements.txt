@@ -1,3 +1,4 @@
+scrapy
 boto
 extruct
 w3lib
