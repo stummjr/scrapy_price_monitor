@@ -4,7 +4,6 @@ from .base_spider import BaseSpider
 
 class EbaySpider(BaseSpider):
     name = "ebay.com"
-    allowed_domains = ["ebay.com"]
 
     def parse(self, response):
         extractor = MicrodataExtractor()

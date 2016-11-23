@@ -3,7 +3,6 @@ from .base_spider import BaseSpider
 
 class BestbuySpider(BaseSpider):
     name = "bestbuy.com"
-    allowed_domains = ["bestbuy.com"]
 
     def parse(self, response):
         item = response.meta.get('item', {})
